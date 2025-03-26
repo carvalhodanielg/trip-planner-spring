@@ -3,44 +3,108 @@ package com.example.todo.controllers;
 import com.example.todo.entities.Todo;
 import com.example.todo.exceptions.TodoNotFoundException;
 import com.example.todo.services.TodoService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.assertj.MockMvcTester;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(TodoController.class)
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
+
+
+@ExtendWith(MockitoExtension.class)
 public class TodoControllerTest {
 
-    @Autowired
-    private MockMvc mvc;
-
-    @MockitoBean
+    @Mock
     private TodoService todoService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private MockMvc mockMvc;
+    @InjectMocks
+    private TodoController todoController;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
-    public void testGetAllTodoNotFound() throws Exception {
-    Long id = 1L;
-    when(todoService.getAllTodos()).thenThrow(new InternalError());
+    void getAllTodos_ShouldReturnAllTodos(){
+        Todo todo1 = new Todo("first task", "first description",false);
+        Todo todo2 = new Todo("second task", "yet another task", true );
 
-    mockMvc.perform(MockMvcRequestBuilders.get("/todos")).andExpect(status().isInternalServerError());
-//.andExpect(jsonPath("$.message").value("Tarefa não encontrada com o ID: " + id));
+        List<Todo> expectedTodos = Arrays.asList(todo1, todo2);
+
+        when(todoService.getAllTodos()).thenReturn(expectedTodos);
+
+        List<Todo> actualTodos = todoController.getAllTodos();
+
+        assertEquals(expectedTodos, actualTodos);
+        verify(todoService, times(1)).getAllTodos();
 
     }
+
+    @Test
+    void createTodo_ShouldReturnCreatedTodo(){
+        Todo todoToCreate = new Todo("first task", "first description",false);
+
+        when(todoService.createTodo(todoToCreate)).thenReturn(todoToCreate);
+
+        Todo createdTodo = todoController.createTodo(todoToCreate);
+
+        assertEquals(todoToCreate, createdTodo);
+        verify(todoService, times(1)).createTodo(todoToCreate);
+
+    }
+
+    @Test
+    void updateTodo_WithValidId_ShouldReturnUpdatedTodo() {
+        Long id = 1L;
+        Todo editedTodo = new Todo("Todo 1", "Updated Task", false);
+        Todo updatedTodo = new Todo("Todo 1", "Updated Task", false);
+
+        when(todoService.updateTodo(id, editedTodo)).thenReturn(updatedTodo);
+
+        ResponseEntity<Todo> response = todoController.updateTodo(id, editedTodo);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(updatedTodo, response.getBody());
+        verify(todoService, times(1)).updateTodo(id, editedTodo);
+    }
+    @Test
+    void updateTodo_WithInvalidId_ShouldThrowException() {
+        Long invalidId = 99L;
+        Todo editedTodo = new Todo("Title", "Non-existent Task", false);
+
+        when(todoService.updateTodo(invalidId, editedTodo))
+                .thenThrow(new TodoNotFoundException(invalidId));
+
+        assertThrows(TodoNotFoundException.class, () -> {
+            todoController.updateTodo(invalidId, editedTodo);
+        });
+        verify(todoService, times(1)).updateTodo(invalidId, editedTodo);
+    }
+
+    @Test
+    void deleteTodo_WithInvalidId_ShouldThrowException() {
+       Long invalidId = 99L;
+        doThrow(new TodoNotFoundException(invalidId)).when(todoService).deleteTodo(invalidId);
+
+        assertThrows(TodoNotFoundException.class, () -> {
+            todoController.deleteTodo(invalidId);
+        });
+        verify(todoService, times(1)).deleteTodo(invalidId);
+    }
+
+
+
 
 }

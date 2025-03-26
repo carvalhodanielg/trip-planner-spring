@@ -14,11 +14,11 @@ services:
       - SPRING_RABBITMQ_HOST=rabbitmq
     depends_on:
       - db
-      - redis
-      - rabbitmq
+#      - redis
+#      - rabbitmq
 
   db:
-    image: postgres
+    image: postgres:16-alpine
     container_name: todo_pg_db
     environment:
       POSTGRES_DB: tododb
