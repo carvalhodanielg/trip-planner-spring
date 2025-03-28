@@ -32,7 +32,14 @@ public class TodoService {
             todo.setDescription(editedTodo.getDescription());
             todo.setCompleted(editedTodo.isCompleted());
             return  todoRepository.save(todo);
-        }).orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
+        }).orElseThrow(() -> new RuntimeException("Task not found"));
+    }
+
+    public Todo toggleTodoStatus(Long id, Boolean completed){
+        return todoRepository.findById(id).map(todo -> {
+            todo.setCompleted(completed);
+            return todoRepository.save(todo);
+        }).orElseThrow(() -> new RuntimeException("Task not found"));
     }
 
 

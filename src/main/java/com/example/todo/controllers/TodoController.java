@@ -37,4 +37,11 @@ public class TodoController {
         todoService.deleteTodo(id);
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("{id}/complete")
+    public ResponseEntity<Todo> toggleTodoStatus(
+            @PathVariable Long id,
+            @RequestParam(required = false) Boolean completed){
+        return ResponseEntity.ok(todoService.toggleTodoStatus(id, completed));
+    }
 }

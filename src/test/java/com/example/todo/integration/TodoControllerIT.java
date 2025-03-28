@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 
@@ -20,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import static org.springframework.test.web.servlet.RequestBuilder.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -106,5 +108,31 @@ public class TodoControllerIT {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.details").exists())
                 .andExpect(jsonPath("$.details").value(containsString("title")));
+    }
+
+    @Test
+    void givenTodoId_whenCompleteTodo_thenReturnUpdatedTodo() throws Exception{
+        Todo todo = new Todo("Create test", "Creating unit test for completing a todo", false);
+
+        Todo createdTodo = todoRepository.save(todo);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("completed", "true");
+
+        ResultActions response = mockMvc.perform(patch("/todos/{id}/complete", todo.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .params(params));
+
+        response.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.completed").value(true));
+
+
+
+
+
+
+
+
     }
 }
