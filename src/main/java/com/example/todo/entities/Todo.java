@@ -1,5 +1,6 @@
 package com.example.todo.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,10 +19,7 @@ import java.time.LocalDateTime;
 @Table(name = "todo")
 public class Todo extends BaseEntity{
 
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
-
+    @Schema(description = "Task title", required = true, example = "Buy rice")
     @NotBlank(message = "Title is required.")
     @Size(min =3, max = 100, message = "Must have at least 100 characters.")
     @Column(nullable = false, length = 100)
@@ -34,15 +32,6 @@ public class Todo extends BaseEntity{
 
     @Column(nullable = false)
     private boolean completed;
-
-//    @CreationTimestamp
-//    @Column(name = "created_at", updatable = false)
-//    private LocalDateTime createdAt;
-//
-//    @UpdateTimestamp
-//    @Column(name = "updated_at")
-//    private LocalDateTime updatedAt;
-
 
     public Todo() {}
 

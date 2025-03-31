@@ -1,9 +1,16 @@
 package com.example.todo.controllers;
 
+import com.example.todo.dto.TodoRequestDTO;
+import com.example.todo.dto.TodoResponseDTO;
 import com.example.todo.entities.Todo;
 import com.example.todo.exceptions.TodoNotFoundException;
 import com.example.todo.services.TodoService;
+import io.swagger.v3.oas.annotations.OpenAPI31;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,11 +19,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/todos")
+@Tag(name = "Todo", description = "Endpoint to handle Tasks")
 public class TodoController {
-
     @Autowired
     private TodoService todoService;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @ApiResponse(responseCode = "200", description = "List all tasks [description]")
+    @Operation(summary = "List all tasks [summary]")
     @GetMapping
     public List<Todo> getAllTodos(){
         return todoService.getAllTodos();

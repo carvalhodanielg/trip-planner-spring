@@ -1,7 +1,10 @@
 package com.example.todo.services;
 
+import com.example.todo.dto.TodoRequestDTO;
+import com.example.todo.dto.TodoResponseDTO;
 import com.example.todo.entities.Todo;
 import com.example.todo.repositories.TodoRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,8 @@ public class TodoService {
 
     @Autowired
     private TodoRepository todoRepository;
+    @Autowired
+    private ModelMapper modelMapper;
 
     public List<Todo> getAllTodos(){
         return todoRepository.findAll();
@@ -21,6 +26,15 @@ public class TodoService {
     public Todo createTodo(Todo todo){
         return todoRepository.save(todo);
     }
+
+//    public TodoResponseDTO createTodo(TodoRequestDTO requestDTO){
+//        Todo todo = modelMapper.map(requestDTO, Todo.class);
+//
+//        Todo savedTodo = todoRepository.save(todo);
+//
+//        return modelMapper.map(savedTodo, TodoResponseDTO.class);
+//    }
+
 
     public void deleteTodo(Long id){
          todoRepository.deleteById(id);
