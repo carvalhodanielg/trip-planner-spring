@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/todos")
+@RequestMapping("/api/todos")
 @Tag(name = "Todo", description = "Endpoint to handle Tasks")
 public class TodoController {
     @Autowired
@@ -57,3 +57,4 @@ public class TodoController {
         return ResponseEntity.ok(todoService.toggleTodoStatus(id, completed));
     }
 }
+
