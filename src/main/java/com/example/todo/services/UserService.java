@@ -2,6 +2,7 @@ package com.example.todo.services;
 
 import com.example.todo.dto.request.LoginRequest;
 import com.example.todo.dto.request.RegisterRequest;
+import com.example.todo.dto.request.UpdateUserRequest;
 import com.example.todo.dto.response.UserResponse;
 import com.example.todo.entities.User;
 import com.example.todo.repositories.UserRepository;
@@ -43,7 +44,6 @@ public class UserService {
         }
 
         return jwtService.generateToken(user);
-//        return user;
     }
 
     public List<UserResponse> getAllUsers(){
@@ -70,15 +70,16 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(Long id, User updatedUser) {
+    public User updateUser(Long id, UpdateUserRequest updatedUser) {
         return userRepository.findById(id)
                 .map(user -> {
-                    user.setFirstName(updatedUser.getFirstName());
-                    user.setLastName(updatedUser.getLastName());
-                    user.setEmail(updatedUser.getEmail());
+                    user.setFirstName(updatedUser.firstName());
+                    user.setLastName(updatedUser.lastName());
+                    user.setEmail(updatedUser.email());
+                    user.setBio(updatedUser.bio());
                     return userRepository.save(user);
                 })
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found1"));
     }
 
     public void deleteUser(Long id) {
