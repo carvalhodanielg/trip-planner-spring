@@ -12,7 +12,9 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 @Data
@@ -61,5 +63,8 @@ public class Trip extends BaseEntity{
     @Min(1)
     @Max(5)
     private Integer rating = 1;
+
+    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Transportation> transportations = new ArrayList<>();
 
 }
