@@ -34,7 +34,9 @@ public class TripService {
     }
 
     public List<TripResponseDTO> listAllTrips(){
-        return tripRepository.findAll().stream().map(this::mapToResponse).collect(Collectors.toList());
+
+        return tripRepository.findAllWithTransportations().stream().map(this::mapToResponse).collect(Collectors.toList());
+//        return tripRepository.findAll().stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     public TripResponseDTO getTripById(Long id){
@@ -56,7 +58,7 @@ public class TripService {
     private Trip mapToEntity(TripRequestDTO dto){
         return Trip.builder()
                 .id(null)
-                .name("Hello")
+                .name(dto.getName())
                 .description(dto.getDescription())
                 .destination(dto.getDestination())
                 .startDate(dto.getStartDate())
@@ -85,6 +87,7 @@ public class TripService {
                 .coverImageUrl(trip.getCoverImageUrl())
                 .review(trip.getReview())
                 .rating(trip.getRating())
+                .transportations(trip.getTransportations())
                 .build();
     }
 
